@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>θ తీటా Labs — 3D Printing @ ASU</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #0a0a0a;
+      --white: #f5f5f0;
+      --yellow: #ccff00;
+      --gray: #1a1a1a;
+      --mid: #2a2a2a;
+      --muted: #888;
+      --font-display: 'Space Mono', monospace;
+      --font-body: 'Space Grotesk', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 2rem;
+      background: rgba(10,10,10,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #1f1f1f;
+    }
+
+    .logo {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .logo-symbol {
+      font-size: 2.2rem;
+      line-height: 1;
+      color: #ccff00 !important;
+    }
+
+    .logo span { color: var(--white); }
+
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    nav a:hover { color: var(--white); }
+
+    .nav-links { display: flex; gap: 2rem; align-items: center; }
+
+    .nav-cta {
+      background: var(--yellow) !important;
+      color: var(--black) !important;
+      padding: 0.5rem 1.2rem;
+      border-radius: 4px;
+      font-weight: 700 !important;
+    }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 8rem 2rem 4rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .hero-tag {
+      font-family: var(--font-display);
+      font-size: 0.75rem;
+      color: var(--yellow);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.8rem, 7vw, 6rem);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      color: var(--yellow);
+    }
+
+    .hero p {
+      font-size: 1.15rem;
+      color: #aaa;
+      max-width: 520px;
+      margin-bottom: 2.5rem;
+      line-height: 1.7;
+    }
+
+    .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+    .btn-primary {
+      background: var(--yellow);
+      color: var(--black);
+      padding: 0.85rem 2rem;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: opacity 0.2s, transform 0.2s;
+      display: inline-block;
+    }
+
+    .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--white);
+      padding: 0.85rem 2rem;
+      border-radius: 4px;
+      border: 1px solid #333;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: border-color 0.2s, transform 0.2s;
+      display: inline-block;
+    }
+
+    .btn-secondary:hover { border-color: #666; transform: translateY(-1px); }
+
+    /* TICKER */
+    .ticker {
+      background: var(--yellow);
+      color: var(--black);
+      padding: 0.6rem 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .ticker-inner {
+      display: inline-block;
+      animation: ticker 20s linear infinite;
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+    }
+
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* STATS */
+    .stats {
+      border-top: 1px solid #1f1f1f;
+      border-bottom: 1px solid #1f1f1f;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .stat {
+      padding: 2.5rem 2rem;
+      border-right: 1px solid #1f1f1f;
+      text-align: center;
+    }
+
+    .stat:last-child { border-right: none; }
+
+    .stat-num {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--yellow);
+      display: block;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 0.3rem;
+    }
+
+    /* SECTIONS */
+    section { padding: 5rem 2rem; max-width: 1100px; margin: 0 auto; }
+
+    .section-tag {
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      color: var(--yellow);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+      line-height: 1.1;
+    }
+
+    /* SERVICES */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1px;
+      background: #1f1f1f;
+      border: 1px solid #1f1f1f;
+      margin-top: 3rem;
+    }
+
+    .service-card {
+      background: var(--black);
+      padding: 2rem;
+      transition: background 0.2s;
+    }
+
+    .service-card:hover { background: #111; }
+
+    .service-icon {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .service-card h3 {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--white);
+    }
+
+    .service-card p {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .service-price {
+      margin-top: 1rem;
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      color: var(--yellow);
+    }
+
+    /* PROCESS */
+    .process-steps {
+      margin-top: 3rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+    }
+
+    .step {
+      position: relative;
+      padding-left: 1rem;
+      border-left: 2px solid var(--yellow);
+    }
+
+    .step-num {
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      color: var(--yellow);
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+    }
+
+    .step h3 {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .step p { font-size: 0.85rem; color: var(--muted); }
+
+    /* PRICING */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-top: 3rem;
+    }
+
+    .price-card {
+      border: 1px solid #222;
+      border-radius: 6px;
+      padding: 2rem;
+      background: var(--gray);
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .price-card:hover { border-color: var(--yellow); transform: translateY(-2px); }
+
+    .price-card.featured {
+      border-color: var(--yellow);
+      background: #101500;
+    }
+
+    .price-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .price-card.featured .price-label { color: var(--yellow); }
+
+    .price-amount {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .price-unit { font-size: 0.8rem; color: var(--muted); margin-left: 0.3rem; }
+
+    .price-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 0.8rem;
+      line-height: 1.5;
+    }
+
+    /* CTA SECTION */
+    .cta-section {
+      background: var(--yellow);
+      color: var(--black);
+      padding: 5rem 2rem;
+      text-align: center;
+    }
+
+    .cta-section h2 {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 4rem);
+      color: var(--black);
+      margin-bottom: 1rem;
+    }
+
+    .cta-section p {
+      font-size: 1.1rem;
+      color: #333;
+      margin-bottom: 2rem;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .btn-dark {
+      background: var(--black);
+      color: var(--yellow);
+      padding: 0.85rem 2.5rem;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 1rem;
+      text-decoration: none;
+      display: inline-block;
+      transition: opacity 0.2s;
+    }
+
+    .btn-dark:hover { opacity: 0.85; }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid #1f1f1f;
+      padding: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    footer .logo { font-size: 0.95rem; }
+
+    footer p { font-size: 0.8rem; color: var(--muted); }
+
+    /* LAUNCH BADGE */
+    .launch-badge {
+      display: inline-block;
+      background: #141a00;
+      border: 1px solid var(--yellow);
+      color: var(--yellow);
+      font-family: var(--font-display);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      padding: 0.3rem 0.8rem;
+      border-radius: 2px;
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+    }
+
+    /* DIVIDER */
+    .full-divider { border: none; border-top: 1px solid #1f1f1f; }
+
+    @media (max-width: 600px) {
+      .stats { grid-template-columns: 1fr; }
+      .stat { border-right: none; border-bottom: 1px solid #1f1f1f; }
+      nav .nav-links { gap: 1rem; }
+      footer { flex-direction: column; text-align: center; }
+    }
+    .logo-text {
+      display: inline-block;
+      transition: opacity 0.4s ease;
+    }
+    .logo-text.fade { opacity: 0; }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const el = document.querySelector('.logo-text');
+      const states = ['Theta', 'తీటా'];
+      let i = 0;
+      setInterval(() => {
+        el.classList.add('fade');
+        setTimeout(() => {
+          i = (i + 1) % states.length;
+          el.textContent = states[i];
+          el.classList.remove('fade');
+        }, 400);
+      }, 5000);
+    });
+  </script>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="logo"><span class="logo-symbol">θ</span> <span class="logo-text">Theta</span><span class="logo-static"> Labs</span></div>
+    <div class="nav-links">
+      <a href="#services">Services</a>
+      <a href="#process">How it works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="YOUR_GOOGLE_FORM_LINK" target="_blank" class="nav-cta">Get a Quote</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="launch-badge">🎉 20% off first order — limited spots</div>
+    <p class="hero-tag">// ASU Tempe · Bambu Lab A1 · Fast Turnaround</p>
+    <h1>Your parts.<br><em>Printed fast.</em><br>On campus.</h1>
+    <p>θ తీటా Labs is a student-run 3D printing service at ASU. From capstone prototypes to custom designs — engineered quality, student prices.</p>
+    <div class="hero-btns">
+      <a href="YOUR_GOOGLE_FORM_LINK" target="_blank" class="btn-primary">Get a Free Quote</a>
+      <a href="#services" class="btn-secondary">See What We Print</a>
+    </div>
+  </div>
+
+  <!-- TICKER -->
+  <div class="ticker">
+    <div class="ticker-inner">
+      PROTOTYPES &nbsp;·&nbsp; CAPSTONE PARTS &nbsp;·&nbsp; CUSTOM DESIGNS &nbsp;·&nbsp; MULTICOLOR PRINTS &nbsp;·&nbsp; FUNCTIONAL PARTS &nbsp;·&nbsp; FAST DELIVERY &nbsp;·&nbsp; STUDENT PRICES &nbsp;·&nbsp;
+      PROTOTYPES &nbsp;·&nbsp; CAPSTONE PARTS &nbsp;·&nbsp; CUSTOM DESIGNS &nbsp;·&nbsp; MULTICOLOR PRINTS &nbsp;·&nbsp; FUNCTIONAL PARTS &nbsp;·&nbsp; FAST DELIVERY &nbsp;·&nbsp; STUDENT PRICES &nbsp;·&nbsp;
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat">
+      <span class="stat-num">24hr</span>
+      <span class="stat-label">Avg Turnaround</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">4</span>
+      <span class="stat-label">Colors Available</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">ME</span>
+      <span class="stat-label">Engineer Behind It</span>
+    </div>
+  </div>
+
+  <hr class="full-divider" />
+
+  <!-- SERVICES -->
+  <section id="services">
+    <p class="section-tag">// What we print</p>
+    <h2>From idea to<br>physical part.</h2>
+    <div class="services-grid">
+      <div class="service-card">
+        <span class="service-icon">⚙️</span>
+        <h3>Prototypes & Capstone Parts</h3>
+        <p>Functional parts for engineering projects. Tight tolerances, proper fit — not just aesthetic prints.</p>
+        <p class="service-price">From $10</p>
+      </div>
+      <div class="service-card">
+        <span class="service-icon">🎨</span>
+        <h3>Multicolor Prints</h3>
+        <p>Up to 4 colors in one print using Bambu AMS. Perfect for models, logos, and visual prototypes.</p>
+        <p class="service-price">From $15 (+$5 multicolor)</p>
+      </div>
+      <div class="service-card">
+        <span class="service-icon">🔩</span>
+        <h3>Custom Designs</h3>
+        <p>Don't have a file? Describe what you need. As an ME student, I can help design simple parts too.</p>
+        <p class="service-price">Quote on request</p>
+      </div>
+      <div class="service-card">
+        <span class="service-icon">🏗️</span>
+        <h3>Architecture Models</h3>
+        <p>Scale models for design and architecture students. Clean, detailed, fast.</p>
+        <p class="service-price">From $20</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="full-divider" />
+
+  <!-- PROCESS -->
+  <section id="process">
+    <p class="section-tag">// How it works</p>
+    <h2>Order in 4 steps.</h2>
+    <div class="process-steps">
+      <div class="step">
+        <p class="step-num">STEP 01</p>
+        <h3>Submit a quote</h3>
+        <p>Fill out the form with your file, material, and deadline. Takes 2 minutes.</p>
+      </div>
+      <div class="step">
+        <p class="step-num">STEP 02</p>
+        <h3>Get a price</h3>
+        <p>I'll reply within 24 hours with a quote and timeline.</p>
+      </div>
+      <div class="step">
+        <p class="step-num">STEP 03</p>
+        <h3>Pay 50% upfront</h3>
+        <p>Confirm your order with a deposit via Venmo or Zelle.</p>
+      </div>
+      <div class="step">
+        <p class="step-num">STEP 04</p>
+        <h3>Pick up on campus</h3>
+        <p>Meet on ASU Tempe campus. No shipping, no waiting.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="full-divider" />
+
+  <!-- PRICING -->
+  <section id="pricing">
+    <p class="section-tag">// Pricing</p>
+    <h2>Transparent pricing.<br>No surprises.</h2>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <p class="price-label">Standard</p>
+        <span class="price-amount">$1–2<span class="price-unit">/ gram</span></span>
+        <p class="price-desc">PLA material. Great for most prototypes, models, and functional parts.</p>
+      </div>
+      <div class="price-card featured">
+        <p class="price-label">⭐ Most Popular</p>
+        <span class="price-amount">$15<span class="price-unit">min order</span></span>
+        <p class="price-desc">Minimum order for any print job. Includes material + print time.</p>
+      </div>
+      <div class="price-card">
+        <p class="price-label">Multicolor</p>
+        <span class="price-amount">+$5<span class="price-unit">flat</span></span>
+        <p class="price-desc">Add multicolor to any print using the Bambu AMS system.</p>
+      </div>
+      <div class="price-card">
+        <p class="price-label">Rush Order</p>
+        <span class="price-amount">+25%<span class="price-unit">surcharge</span></span>
+        <p class="price-desc">Need it in under 24 hours? Rush pricing applies.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <div class="cta-section">
+    <h2>Need something<br>printed?</h2>
+    <p>Submit a quote request and I'll get back to you within 24 hours. First order gets 20% off.</p>
+    <a href="YOUR_GOOGLE_FORM_LINK" target="_blank" class="btn-dark">Get a Free Quote →</a>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="logo">θ <span>తీటా Labs</span></div>
+    <p>ASU Tempe · θ తీటా Labs</p>
+    <p>WhatsApp: YOUR_NUMBER</p>
+  </footer>
+
+</body>
+</html>
